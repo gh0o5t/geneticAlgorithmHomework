@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import random
-from modules.game_object import GameObject, Robot
-from modules.game_screen import GameScreen
+from utilities import GameScreen, Object, Robot
 import pygame
+import time
 
 def createScreen():
     game = GameScreen()
@@ -16,7 +16,7 @@ def main():
     game.setResolution()
     game.setBgColor()
     game.setScreen()
-    dest = GameObject((200,200), (20,20))
+    dest = Object((200,200), (20,20))
     dest.drawObject(game.screen)
     robot = Robot((300,300), (20,20), 20)
     robot.setColor((255,255,255))
