@@ -16,18 +16,34 @@ def createScreen():
     game = GameScreen()
     return game
 
-def randomPosition(margin: tuple, objSize: tuple):
+def genRandomPosition(screenSize: tuple, objSize: int):
     """
     Creates random postion on the GameScreen
 
-    :param margin: margin for random postion
-    :type margin: tuple
+    :param screenSize: size of screen 
+    :type screenSize: tuple
     :param objSize: size of the object that should be placed
-    :type objSize: tuple
+    :type objSize: int
+    :return randomPosition: random x and y coordinates
+    :rtype: tuple
 
     """
 
-    pass 
+    xMargin = screenSize[0]
+    yMargin = screenSize[1]
+
+    randomPositionX = random.randint(0, xMargin)
+    randomPositionY = random.randint(0, yMargin)
+
+    if randomPositionX + objSize > xMargin:
+        randomPositionX = xMargin - objSize
+   
+    if randomPositionY + objSize > yMargin:
+        randomPositionY = yMargin - objSize
+    
+    randomPosition = (randomPositionX, randomPositionY)
+
+    return randomPosition
 
 def moveRobot(
         robotObj: Robot,
@@ -36,10 +52,10 @@ def moveRobot(
         staticObj=None
     ):
     """
-    :description: Moves a robot object on the screen, and repairs statit object
+    :description: Moves a robot object on the screen, and repairs static object
         if necessary
     :param robotObj: object to move
-    :type robotObj: Robot
+    :type robotObj: Robot to move
     :param gameScreen: Screen where the robot should be moved
     :type gameScreen: GameScreen
     :param direction: can be up, down, left, right
@@ -52,43 +68,18 @@ def moveRobot(
                   direction
     )
     gameScreen.fillScreen()
-    robotObj.drawObject(gameScreen)
+    robotObj.drawObject(gameScreen.screen)
     if staticObj:
-        staticObj.drawObject(gameScreen)
+        staticObj.drawObject(gameScreen.screen)
         pygame.time.delay(100)
     pygame.time.delay(100)
     pygame.display.flip()
 
-# def main_test():
-    # game = createScreen()
-    # dest = GameObject((200,200), (20,20))
-    # dest.drawObject(game.screen)
-    # robot = Robot((300,300), (20,20), 20)
-    # robot.setColor((255,255,255))
-    # robot.drawObject(game.screen)
-    # run = True
-    # while run:
-        # pygame.time.delay(10)
-        # for event in pygame.event.get():
-            # if event.type == pygame.QUIT:
-                # run = False
-        # robot.move(game.screenWidth, game.screenHeight, 2)
-        # game.fillScreen()
-        # robot.drawObject(game.screen)
-        # dest.drawObject(game.screen)
-        # pygame.time.delay(100)
-        # pygame.display.flip()
-        # # robot.move(game.screenWidth, game.screenHeight, up=True)
-        # # game.fillScreen()
-        # # robot.drawObject(game.screen)
-        # # dest.drawObject(game.screen)
-        # # pygame.time.delay(100)
-        # pygame.display.flip()
-    # print(robot.x, robot.y)
         
 def main():
     # create game sceen
     game = createScreen()
+
     
     # create destination object
     dest = GameObject((200,200), (20,20))
@@ -99,14 +90,19 @@ def main():
     robot.setColor((255,255,255))
     robot.drawObject(game.screen)
 
+    # Running the game
     run = 1
     while run:
         pygame.time.delay(10)
+        # Check for quit event
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = 0
+        pygame.display.flip()
         
-        moveRobot(robot, game.screen, 1, staticObj=dest)
+
+    # Temporary for addational info
+    print(robot.x, robot.y)
 
 if __name__ == "__main__":
     main()

@@ -24,6 +24,7 @@ class Robot(GameObject):
 
     def move(self, wBorder: int, hBorder: int, direction: int):
         """
+        :description: Moes Robot object on the screen
         :param direction: 1: left, 2, right, 3: up, 4: down
         :type direction: int
         """
