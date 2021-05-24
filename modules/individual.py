@@ -5,6 +5,7 @@ class Individual():
         self.chromosome = chromosome
 
     def mutate(self):
+        # A mutacionak valami olyannak kellene lennie ami megvaltoztatja a mainDirection-t
         pass
 
     def fitness(self):

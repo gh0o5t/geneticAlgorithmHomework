@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 import pygame
-import random
 from modules.game_screen import GameScreen
 
 class GameObject:
-    def __init__(self, position: tuple, dimension: tuple):
+    def __init__(self, position: tuple, dimension: tuple, color=(255, 0, 0)):
         self.x = position[0]
         self.y = position[1]
         self.width = dimension[0]
         self.height = dimension[1]
-        self.color = (255, 0, 0)
+        self.color = color 
 
     def setColor(self, color: tuple):
         self.color = color
@@ -19,8 +18,8 @@ class GameObject:
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
 class Robot(GameObject):
-    def __init__(self, position: tuple, dimension: tuple, velocity: int):
-        GameObject.__init__(self, position, dimension)
+    def __init__(self, position: tuple, dimension: tuple, velocity: int, color=(255, 255, 255)):
+        GameObject.__init__(self, position, dimension, color) 
         self.velocity = velocity
         self.steps = []
 
@@ -71,5 +70,3 @@ class Robot(GameObject):
         # Saving the steps 
         self.saveStep(direction)
 
-    def randomMove(self):
-        pass
