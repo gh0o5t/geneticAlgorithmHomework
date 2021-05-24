@@ -99,13 +99,14 @@ def genRandomPosition(screenSize: tuple, objSize: tuple):
             # moveRobot(robotObj, gameScreen, randint(1, 4), staticObj)
         # counter += 1
 
-def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
+def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mainDirection):
         gameScreen.fillScreen()
         dest.drawObject(gameScreen.screen)
         for robot in robots:
-            # The first random step of a robot will be the main direction
-            if len(robot.steps) > 0 and len(robot.steps) % 3 == 0:
-                mainDirection = robot.steps[0]['direction']
+            if len(robot.steps) == 0:
+                robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
+            if len(robot.steps) > 0 and len(robot.steps) % 2 == 0:
+                # mainDirection = robot.steps[0]['direction']
                 robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
             else:
                 robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))

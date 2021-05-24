@@ -2,6 +2,7 @@
 from modules.game_object import GameObject, Robot
 from modules.game_screen import GameScreen
 from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEvent
+from random import randint
 import pygame
 
         
@@ -20,7 +21,7 @@ def main():
     
     # Create robot object
     robotSize = (10, 10)
-    robotVelocity = 20
+    robotVelocity = 10
     robotRandPos = genRandomPosition(
         (game.screenWidth, game.screenHeight),
         robotSize
@@ -53,11 +54,10 @@ def main():
 
 
     # Ez a fo mukodo verzio
-    # while True:
-        # checkQuitEvent()
-    for _ in range(50):
+    mainDirection = randint(1,4)
+    for _ in range(100):
         checkQuitEvent()
-        pseudoRandomMove(game, population, dest)
+        pseudoRandomMove(game, population, dest, mainDirection)
     
     
 
