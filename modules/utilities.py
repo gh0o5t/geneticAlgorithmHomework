@@ -100,23 +100,78 @@ def genRandomPosition(screenSize: tuple, objSize: tuple):
         # counter += 1
 
 def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mainDirection):
-        gameScreen.fillScreen()
-        dest.drawObject(gameScreen.screen)
-        for robot in robots:
-            if len(robot.steps) == 0:
-                robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
-            if len(robot.steps) > 0 and len(robot.steps) % 2 == 0:
-                # mainDirection = robot.steps[0]['direction']
-                robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
-            else:
-                robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))
-            robot.drawObject(gameScreen.screen)
+    """
+    :description: Moves a list of robots randomly, to a main direction. It is the initialization
+        of the first generation. List of robots is the population
+    :param gameScreen: GameScreen object where the robots should be moved
+    :type gameScreen: GameScreen
+    :param robots: list of Robot objects
+    :type robots: list
+    :param dest: The destination object. It is necessary for reparing the dest object
 
-        pygame.display.flip()
-        pygame.time.delay(100)
+    """
+    gameScreen.fillScreen()
+    dest.drawObject(gameScreen.screen)
+    for robot in robots:
+        if len(robot.steps) == 0:
+            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
+        if len(robot.steps) > 0 and len(robot.steps) % 2 == 0:
+            # mainDirection = robot.steps[0]['direction']
+            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
+        else:
+            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))
+        robot.drawObject(gameScreen.screen)
+
+    pygame.display.flip()
+    pygame.time.delay(100)
     
 
-         
+# Ez nem tereli oket semerre
+# def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
+    # """
+    # :description: Moves a list of robots randomly, to a main direction. It is the initialization
+        # of the first generation. List of robots is the population
+    # :param gameScreen: GameScreen object where the robots should be moved
+    # :type gameScreen: GameScreen
+    # :param robots: list of Robot objects
+    # :type robots: list
+    # :param dest: The destination object. It is necessary for reparing the dest object
+
+    # """
+    # gameScreen.fillScreen()
+    # dest.drawObject(gameScreen.screen)
+    # for robot in robots:
+        # robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))
+        # robot.drawObject(gameScreen.screen)
+
+    # pygame.display.flip()
+    # pygame.time.delay(100)
+
+def crossover(robotA, robotB):
+    # nem mukdoik meg
+    mainDirection = robotA.steps[0]
+    chromosomeLength = len(robotA.steps)
+    counter = 0
+    child = [mainDirection]
+    A = True
+    B = False
+    for chromosome in range(chromosomeLength):
+        # Not the main direction step should be crossed
+        if counter % 2 != 0 and A:
+           child.append(robotA.steps[counter]) 
+           A = False
+           B = True
+        if counter % 2 != 0 and B:
+           child.append(robotB.steps[counter]) 
+           A = True
+           B = False
+        counter += 1
+    return child
+
+
+
+    return child
+
 def checkQuitEvent():
     """
     :description: checks for quit event in pygame and quits if necessary

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import pygame
 from modules.game_screen import GameScreen
+from math import sqrt
 
 class GameObject:
     def __init__(self, position: tuple, dimension: tuple, color=(255, 0, 0)):
@@ -18,25 +19,27 @@ class GameObject:
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
 class Robot(GameObject):
+
+    """
+    :description: In the genetic algorithm, it acts as an indiviual
+    """
+
     def __init__(self, position: tuple, dimension: tuple, velocity: int, color=(255, 255, 255)):
         GameObject.__init__(self, position, dimension, color) 
         self.velocity = velocity
+        # Works as a chromosome of the individual
         self.steps = []
+        self.fitness = 0
 
-    def saveStep(self, step: int):
+    def _saveStep(self, step: int):
 
         """
-        :description: saves the step and and the position into self.steps list of dicts
-        :param step: the step which shold be saved, it is a direction
+        :description: saves the steps into self.steps list
+        :param step: the step which should be saved, it is a direction
         :type step: int
         """
 
-        self.steps.append(
-            {
-                'direction': step,
-                'position': (self.x, self.y)
-            }
-        )
+        self.steps.append(step)
 
     def move(self, wBorder: int, hBorder: int, direction: int):
 
@@ -68,5 +71,20 @@ class Robot(GameObject):
                 self.y = hBorder - self.height
 
         # Saving the steps 
-        self.saveStep(direction)
+        self._saveStep(direction)
 
+
+    def mutate(self):
+
+        pass
+
+    def calFitness(self, dest: GameObject):
+
+        """
+        :description: calculates the fitness value of a Robot/Individual
+        :param dest: the destination of which must be reached
+        :type dest: GameObject 
+
+        """
+        
+        self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))

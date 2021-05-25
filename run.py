@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from modules.game_object import GameObject, Robot
 from modules.game_screen import GameScreen
-from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEvent
+from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEvent, crossover
 from random import randint
 import pygame
 
@@ -28,6 +28,7 @@ def main():
     )
 
     generation = 0
+    chromosomeLength = 30
     populationSize = 50
     population = [Robot(robotRandPos, robotSize, robotVelocity) for _ in range(populationSize)]
 
@@ -54,11 +55,25 @@ def main():
 
 
     # Ez a fo mukodo verzio
+    # Ezzel adott iranyba vannak terelve
     mainDirection = randint(1,4)
-    for _ in range(100):
+    for _ in range(chromosomeLength):
         checkQuitEvent()
         pseudoRandomMove(game, population, dest, mainDirection)
-    
+
+    for robot in population:
+        robot.calFitness(dest)
+        print(robot.x, robot.y, robot.fitness)
+
+    print(population[0].steps)
+    print(population[1].steps)
+    child = crossover(population[0], population[1])
+    print(child)
+   
+    # Ezzel nincsenek adott iranyba terelve
+    # for _ in range(100):
+        # checkQuitEvent()
+        # pseudoRandomMove(game, population, dest)
     
 
 
