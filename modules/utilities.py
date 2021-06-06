@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from random import randint
+from random import randint, choice
 from modules.game_object import Robot, GameObject
 from modules.game_screen import GameScreen
 import pygame
@@ -148,29 +148,17 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mai
     # pygame.time.delay(100)
 
 def crossover(robotA, robotB):
-    # nem mukdoik meg
-    mainDirection = robotA.steps[0]
+    # The chromosomeLength is same for A and B
     chromosomeLength = len(robotA.steps)
     counter = 0
-    child = [mainDirection]
-    A = True
-    B = False
-    for chromosome in range(chromosomeLength):
-        # Not the main direction step should be crossed
-        if counter % 2 != 0 and A:
-           child.append(robotA.steps[counter]) 
-           A = False
-           B = True
-        if counter % 2 != 0 and B:
-           child.append(robotB.steps[counter]) 
-           A = True
-           B = False
+    child = Robot(robotA.initialPosition, (robotA.width, robotA.height), robotA.velocity)
+    for _ in range(chromosomeLength):
+        child.steps.append(choice([robotA.steps[counter], robotB.steps[counter]]))
         counter += 1
     return child
 
 
 
-    return child
 
 def checkQuitEvent():
     """

@@ -5,7 +5,8 @@ from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEven
 from random import randint
 import pygame
 
-        
+
+
 def main():
     # create game sceen
     game = GameScreen(1200,1200)
@@ -20,6 +21,7 @@ def main():
     dest.drawObject(game.screen)
     
     # Create robot object
+    # There is 
     robotSize = (10, 10)
     robotVelocity = 10
     robotRandPos = genRandomPosition(
@@ -27,6 +29,7 @@ def main():
         robotSize
     )
 
+    # Setting up genetic algorithm specs
     generation = 0
     chromosomeLength = 30
     populationSize = 50
@@ -68,7 +71,7 @@ def main():
     print(population[0].steps)
     print(population[1].steps)
     child = crossover(population[0], population[1])
-    print(child)
+    print(child.steps)
    
     # Ezzel nincsenek adott iranyba terelve
     # for _ in range(100):

@@ -30,16 +30,22 @@ class Robot(GameObject):
         # Works as a chromosome of the individual
         self.steps = []
         self.fitness = 0
+        self.initialPosition = None 
 
     def _saveStep(self, step: int):
 
         """
-        :description: saves the steps into self.steps list
+        :description: saves the steps into self.steps list, and the initial position of the robot
         :param step: the step which should be saved, it is a direction
         :type step: int
         """
 
         self.steps.append(step)
+
+        # Saving the initial postion for later use (mainly for utilities/crossover)
+        if self.initialPosition == None:
+            self.initialPosition = (self.x, self.y)
+
 
     def move(self, wBorder: int, hBorder: int, direction: int):
 
@@ -88,3 +94,4 @@ class Robot(GameObject):
         """
         
         self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
+
