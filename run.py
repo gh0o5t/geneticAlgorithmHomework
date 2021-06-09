@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from modules.game_object import GameObject, Robot
 from modules.game_screen import GameScreen
-from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEvent, crossover
+from modules.utilities import genRandomPosition, pseudoRandomMove, checkQuitEvent, crossover, mutatePopulation
+from modules.utilities import crossover, mutatePopulation
 from random import randint
 import pygame
 
 
+# Maybe I should create functions for initialization of the environment
 
 def main():
     # create game sceen
@@ -20,8 +22,7 @@ def main():
     dest = GameObject(destRandPos, destSize)
     dest.drawObject(game.screen)
     
-    # Create robot object
-    # There is 
+    # Create default robot object
     robotSize = (10, 10)
     robotVelocity = 10
     robotRandPos = genRandomPosition(
@@ -31,17 +32,18 @@ def main():
 
     # Setting up genetic algorithm specs
     generation = 0
-    chromosomeLength = 30
-    populationSize = 50
-    population = [Robot(robotRandPos, robotSize, robotVelocity) for _ in range(populationSize)]
 
-    # iCounter = 0
-    # for robot in population: 
-        # robot.setColor((255, 255, 255))
-        # robot.drawObject(game.screen)
-        # pseudoRandomMove(robot, game, dest)
-        # iCounter += 1
-        # pygame.time.delay(2000)
+    # Number of steps
+    chromosomeLength = 30
+   
+    # Number of possible solutions/robots
+    populationSize = 50
+
+    # Initalizing first generation
+    population = [Robot(robotRandPos, robotSize, robotVelocity) for _ in range(populationSize)]
+    
+    # Best fitness of any individual in the current generation
+    bestFitness = None
 
 
     # Azt kell megoldani, hogy egyszerre tudjam kirajzolni egy populacion belul hogy ki merre megy
@@ -64,14 +66,32 @@ def main():
         checkQuitEvent()
         pseudoRandomMove(game, population, dest, mainDirection)
 
+    print("Fitness of parents")
     for robot in population:
         robot.calFitness(dest)
         print(robot.x, robot.y, robot.fitness)
 
-    print(population[0].steps)
-    print(population[1].steps)
-    child = crossover(population[0], population[1])
-    print(child.steps)
+    # print(population[0].steps)
+    # print(population[1].steps)
+    # child = crossover(population[0], population[1])
+    # print(child.steps)
+    print("Fitness of children")
+    children = crossover(population, game)
+    for child in children:
+        child.calFitness(dest)
+        print(child.x, child.y, child.fitness)
+    
+    mergedPopulation = population + children
+    print(len(population), len(children), len(mergedPopulation))
+    mutatePopulation(mergedPopulation, game, round(populationSize * 0.1))
+
+    print("Fitness of merged population")
+    for robot in mergedPopulation:
+        robot.calFitness(dest)
+        print(robot.x, robot.y, robot.fitness)
+    
+
+
    
     # Ezzel nincsenek adott iranyba terelve
     # for _ in range(100):

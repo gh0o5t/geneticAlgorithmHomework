@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from random import randint, choice
+from random import randint, choice, sample
 from modules.game_object import Robot, GameObject
 from modules.game_screen import GameScreen
 import pygame
@@ -108,6 +108,7 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mai
     :param robots: list of Robot objects
     :type robots: list
     :param dest: The destination object. It is necessary for reparing the dest object
+    :type dest: GameObject
 
     """
     gameScreen.fillScreen()
@@ -147,19 +148,66 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mai
     # pygame.display.flip()
     # pygame.time.delay(100)
 
-def crossover(robotA, robotB):
-    # The chromosomeLength is same for A and B
-    chromosomeLength = len(robotA.steps)
-    counter = 0
-    child = Robot(robotA.initialPosition, (robotA.width, robotA.height), robotA.velocity)
-    for _ in range(chromosomeLength):
-        child.steps.append(choice([robotA.steps[counter], robotB.steps[counter]]))
-        counter += 1
-    return child
+def crossover(population: list, gameScreen: GameScreen):
+
+    """
+    :description: produces the children for the next generation. The number of childen is equal
+        to the number of parents
+    :param population: a list of Robot objects
+    :type population: list
+    :param gameScreen: GameScreen object where the population moves, necessary to move the children
+        to the right position and calculate the fitness
+    :return children: a list of crossed robot objects
+    :rtype: list
+    """
+
+    children = []
+
+    for _ in range(len(population)):
+        parents = sample(population, 2)
+        robotA, robotB = parents[0], parents[1]
+        # The chromosomeLength is same for A and B
+        chromosomeLength = len(robotA.steps)
+        counter = 0
+        # These are the same values for robotA and robotB
+        child = Robot(robotA.initialPosition, (robotA.width, robotA.height), robotA.velocity)
+        for _ in range(chromosomeLength):
+            child.steps.append(choice([robotA.steps[counter], robotB.steps[counter]]))
+            counter += 1
+        for step in child.steps:
+            child.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
+        children.append(child)
+    return children
 
 
 
+def mutatePopulation(population: list, gameScreen: GameScreen, mutatationFactor: int):
 
+    """
+    :description: mutates some of the bad fitness individuals. The fitness values of the robots must be
+        calculated previously. This modifies the original population worst mutatationFactor amount of members.
+    :param population: a list of Robot objects, this list of objects will me modified 
+        with this function
+    :type population: list
+    :param gameScreen: GameScreen object where the population moves, necessary to move the gnomes
+        to the right position and calculate the fitness
+    :param mutatationFactor: number of indiviuals who will be mutatated
+    :type mutatationFactor: int
+    """
+
+    population.sort(key=lambda x: x.fitness, reverse=True)
+    c = 1
+    # +1 is needed cuz without it it would mutate 
+    #     mutationFactor - 1 amount of individuals
+    while c != mutatationFactor + 1:
+        gnome = population[-c]
+        gnome.mutate()
+        for step in gnome.steps:
+            gnome.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
+        c += 1
+
+    
+    
 def checkQuitEvent():
     """
     :description: checks for quit event in pygame and quits if necessary
@@ -167,10 +215,6 @@ def checkQuitEvent():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
-
-
-
-
 
 
 

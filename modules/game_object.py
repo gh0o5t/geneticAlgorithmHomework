@@ -29,8 +29,9 @@ class Robot(GameObject):
         self.velocity = velocity
         # Works as a chromosome of the individual
         self.steps = []
-        self.fitness = 0
+        self.fitness = None
         self.initialPosition = None 
+        self.generation = 0
 
     def _saveStep(self, step: int):
 
@@ -47,12 +48,15 @@ class Robot(GameObject):
             self.initialPosition = (self.x, self.y)
 
 
-    def move(self, wBorder: int, hBorder: int, direction: int):
+    def move(self, wBorder: int, hBorder: int, direction: int, saveStep = True):
 
         """
         :description: Moes Robot object on the screen
         :param direction: 1: left, 2, right, 3: up, 4: down
         :type direction: int
+        :param saveStep: if True saves the step of the robot to steps attribute, otherwise not.
+            Basically if step list is emtpy it should be true, fale otherwise.
+        :type saveStep: bool
         """
 
         # moving left
@@ -77,12 +81,23 @@ class Robot(GameObject):
                 self.y = hBorder - self.height
 
         # Saving the steps 
-        self._saveStep(direction)
+        if saveStep:
+            self._saveStep(direction)
 
 
     def mutate(self):
-
-        pass
+        """
+        :description: mutates the individual/robot, inverts all the steps of the robot
+        """
+        for step in range(len(self.steps)):
+            if self.steps[step] == 1:
+                self.steps[step] = 2
+            if self.steps[step] == 2:
+                self.steps[step] = 1
+            if self.steps[step] == 3:
+                self.steps[step] = 4
+            if self.steps[step] == 4:
+                self.steps[step] = 3
 
     def calFitness(self, dest: GameObject):
 
@@ -92,6 +107,6 @@ class Robot(GameObject):
         :type dest: GameObject 
 
         """
-        
-        self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
+        if self.fitness == None:
+            self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
 
