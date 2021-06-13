@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import pygame
 from modules.game_screen import GameScreen
+import os, sys
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+from config import initialRobotPosition
 from math import sqrt
 
 class GameObject:
@@ -13,6 +18,16 @@ class GameObject:
 
     def setColor(self, color: tuple):
         self.color = color
+
+    def modifyPositon(self, newPosition):
+
+        """
+        :description: modifies the x and y values of a GameObject
+        :param newPosition: new position of the GameObject
+        :type newPosition: tupl
+        """
+        self.x = newPosition[0]
+        self.y = newPosition[1]
 
     def drawObject(self, screen: GameScreen):
         # screen must be a a GameScreen screen attribute
@@ -30,7 +45,6 @@ class Robot(GameObject):
         # Works as a chromosome of the individual
         self.steps = []
         self.fitness = None
-        self.initialPosition = None 
         self.generation = 0
 
     def _saveStep(self, step: int):
@@ -43,9 +57,16 @@ class Robot(GameObject):
 
         self.steps.append(step)
 
-        # Saving the initial postion for later use (mainly for utilities/crossover)
-        if self.initialPosition == None:
-            self.initialPosition = (self.x, self.y)
+
+    def _resetRobotPosition(self):
+
+        """
+        :description: resets the robot x and y coordinates. It should be used after
+            calculating a the fitness of the robot. It is necessary for having the same
+            starting position for all the robots in all of the generations.
+        """
+        self.x = initialRobotPosition[0]
+        self.y = initialRobotPosition[1]
 
 
     def move(self, wBorder: int, hBorder: int, direction: int, saveStep = True):
@@ -84,11 +105,12 @@ class Robot(GameObject):
         if saveStep:
             self._saveStep(direction)
 
-
     def mutate(self):
+
         """
         :description: mutates the individual/robot, inverts all the steps of the robot
         """
+
         for step in range(len(self.steps)):
             if self.steps[step] == 1:
                 self.steps[step] = 2
@@ -103,10 +125,11 @@ class Robot(GameObject):
 
         """
         :description: calculates the fitness value of a Robot/Individual
-        :param dest: the destination of which must be reached
+        :param dest: the destination which must be reached
         :type dest: GameObject 
 
         """
-        if self.fitness == None:
-            self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
+        self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
+        self._resetRobotPosition()
+
 

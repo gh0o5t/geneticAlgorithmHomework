@@ -2,102 +2,8 @@
 from random import randint, choice, sample
 from modules.game_object import Robot, GameObject
 from modules.game_screen import GameScreen
+from config import robotSize, robotVelocity, chromosomeLength, initialRobotPosition
 import pygame
-
-
-def genRandomPosition(screenSize: tuple, objSize: tuple):
-    """
-    Creates random postion on the GameScreen
-
-    :param screenSize: size of screen 
-    :type screenSize: tuple
-    :param objSize: size of the object that should be placed
-    :type objSize: int
-    :return randomPosition: random x and y coordinates
-    :rtype: tuple
-
-    """
-
-    xMargin = screenSize[0]
-    yMargin = screenSize[1]
-    xObjSize = objSize[0]
-    yObjSize = objSize[1]
-
-    randomPositionX = randint(0, xMargin)
-    randomPositionY = randint(0, yMargin)
-
-    if randomPositionX + xObjSize > xMargin:
-        randomPositionX = xMargin - xObjSize
-   
-    if randomPositionY + yObjSize > yMargin:
-        randomPositionY = yMargin - yObjSize
-    
-    randomPosition = (randomPositionX, randomPositionY)
-
-    return randomPosition
-
-# Depricated
-# def moveRobot(
-        # robotObj: Robot,
-        # gameScreen: GameScreen,
-        # direction: int,
-        # staticObj=None
-    # ):
-
-    # """
-    # :description: Moves a robot object on the screen, and repairs static object
-        # if necessary
-    # :param robotObj: object to move
-    # :type robotObj: Robot to move
-    # :param gameScreen: Screen where the robot should be moved
-    # :type gameScreen: GameScreen
-    # :param direction: can be up, down, left, right
-    # :param staticObj: optional, static object which shold be refreshed after screen mods
-    # :type staticObj: if given it is GameObject, None otherwise
-
-    # """
-
-    # robotObj.move(gameScreen.screenWidth, 
-                  # gameScreen.screenHeight,
-                  # direction
-    # )
-    # gameScreen.fillScreen()
-    # robotObj.drawObject(gameScreen.screen)
-    # if staticObj:
-        # staticObj.drawObject(gameScreen.screen)
-    # pygame.time.delay(100)
-    # pygame.display.flip()
-
-
-# Depricated
-# def pseudoRandomMove(
-    # robotObj: Robot,
-    # gameScreen: GameScreen,
-    # staticObj=None,
-    # maxStep = 50
-# ):
-    # """
-    # :description: wrapper func which moves the robot with pseudo random steps, makes
-        # the robot to go into a given direction until ... 
-        # Other parameters are same as in moveRobot
-    # :param maxStep: maximum step count
-    # :type maxStep: int
-    # """
-    # mainDirection = randint(1, 4)
-    # counter = 0
-    # run = 1
-    # while run:
-        # for event in pygame.event.get():
-            # if event.type == pygame.QUIT:
-                # pygame.quit()
-                # quit()
-        # if counter > maxStep:
-            # break
-        # if counter % 3 == 0:
-            # moveRobot(robotObj, gameScreen, mainDirection, staticObj)
-        # else:
-            # moveRobot(robotObj, gameScreen, randint(1, 4), staticObj)
-        # counter += 1
 
 def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mainDirection):
     """
@@ -124,7 +30,7 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mai
         robot.drawObject(gameScreen.screen)
 
     pygame.display.flip()
-    pygame.time.delay(100)
+    pygame.time.delay(10)
     
 
 # Ez nem tereli oket semerre
@@ -164,16 +70,17 @@ def crossover(population: list, gameScreen: GameScreen):
     children = []
 
     for _ in range(len(population)):
+        # Selecting parents randomly
         parents = sample(population, 2)
         robotA, robotB = parents[0], parents[1]
-        # The chromosomeLength is same for A and B
-        chromosomeLength = len(robotA.steps)
         counter = 0
-        # These are the same values for robotA and robotB
-        child = Robot(robotA.initialPosition, (robotA.width, robotA.height), robotA.velocity)
+        # Init child
+        child = Robot(initialRobotPosition, robotSize, robotVelocity)
+        # Randomly choosing the chromosome of a parent
         for _ in range(chromosomeLength):
             child.steps.append(choice([robotA.steps[counter], robotB.steps[counter]]))
             counter += 1
+        # Moving the child to receive the last position for calculating fitness
         for step in child.steps:
             child.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
         children.append(child)
@@ -181,11 +88,12 @@ def crossover(population: list, gameScreen: GameScreen):
 
 
 
-def mutatePopulation(population: list, gameScreen: GameScreen, mutatationFactor: int):
+def mutatePopulation(mergedPopulation: list, gameScreen: GameScreen, mutatationFactor: int):
 
     """
     :description: mutates some of the bad fitness individuals. The fitness values of the robots must be
         calculated previously. This modifies the original population worst mutatationFactor amount of members.
+        This function also sorts the population based on fitness value.
     :param population: a list of Robot objects, this list of objects will me modified 
         with this function
     :type population: list
@@ -195,16 +103,35 @@ def mutatePopulation(population: list, gameScreen: GameScreen, mutatationFactor:
     :type mutatationFactor: int
     """
 
-    population.sort(key=lambda x: x.fitness, reverse=True)
+    mergedPopulation.sort(key=lambda x: x.fitness, reverse=True)
     c = 1
     # +1 is needed cuz without it it would mutate 
     #     mutationFactor - 1 amount of individuals
     while c != mutatationFactor + 1:
-        gnome = population[-c]
+        gnome = mergedPopulation[-c]
         gnome.mutate()
         for step in gnome.steps:
             gnome.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
         c += 1
+
+def selection(mergedPopulation: list):
+
+    """
+    :description: select best individuals from the population. Size of
+        the population will remain the same over the generations. This function should be
+        called on a merged (children and parents) and a mutated population.
+        Cuz the len of population must be same over the genrations it will remove the worse half
+        of the merged population. This function also sort the population based on fitness before
+        deletion.
+        This fuction modifies the original population. 
+    :param mergedPopulation: the merged population which must go through selection
+        list of robot objects (children, parents, gnomes)
+    :type mergedPopulation: list
+    """
+
+    mergedPopulation.sort(key=lambda x: x.fitness, reverse=True)
+    n = int(-len(mergedPopulation)/2) 
+    del mergedPopulation[n:]
 
     
     
@@ -215,18 +142,6 @@ def checkQuitEvent():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
