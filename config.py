@@ -17,10 +17,14 @@ populationSize = 70
 #   which can be done by an individual
 chromosomeLength = 150
 
+# Maximum number of generations
+# This is for terminating the program in case of unsolvable problem
+maxGeneration = 100
+
 # The initial position of the robot
 # initialRobotPosition = genRandomPosition((screenWidth, screenHeight), robotSize)
 initialRobotPosition = (450, 600)
 
 # The initial position of the destinaiton
 # destPosition = genRandomPosition((screenWidth, screenHeight), destSize)
-destPosition = (1100, 50)
+destPosition = (1170, 0)

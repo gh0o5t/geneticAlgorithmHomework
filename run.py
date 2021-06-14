@@ -6,7 +6,7 @@ from modules.utilities import crossover, mutatePopulation, selection
 from random import randint
 from config import screenWidth, screenHeight, robotSize, robotVelocity, destSize
 from config import initialRobotPosition, destPosition
-from config import populationSize, chromosomeLength
+from config import populationSize, chromosomeLength, maxGeneration
 import pygame
 
 
@@ -51,7 +51,7 @@ def main():
         pseudoRandomMove(game, population, dest)
 
     c = 0
-    while c != 60:
+    while c != maxGeneration:
         # Delaying pygame between genration
         pygame.time.delay(10)
 
@@ -100,12 +100,12 @@ def main():
         for robot in population:
             robot.generation += 1
         print("Current generation: {}".format(generation))
-
+        print("Best fitness: {}".format(population[0].fitness))
+        bestFitness = population[0].fitness
 
         # Checking if we reached the destination
-        # van valami baj a fitnessesl is mert siman atgazoltak a celponton :D
-        # if bestFitness >= 0:
-            # break
+        if bestFitness == - 0.0:
+            break
 
         c += 1
 
