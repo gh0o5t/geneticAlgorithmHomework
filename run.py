@@ -104,7 +104,7 @@ def main():
         bestFitness = population[0].fitness
 
         # Checking if we reached the destination
-        if bestFitness == - 0.0:
+        if - bestFitness < robotSize[0]:
             break
 
         c += 1

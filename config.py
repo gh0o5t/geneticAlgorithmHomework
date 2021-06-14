@@ -23,8 +23,8 @@ maxGeneration = 100
 
 # The initial position of the robot
 initialRobotPosition = genRandomPosition((screenWidth, screenHeight), robotSize)
-initialRobotPosition = (450, 600)
+# initialRobotPosition = (450, 600)
 
 # The initial position of the destinaiton
 destPosition = genRandomPosition((screenWidth, screenHeight), destSize)
-destPosition = (1170, 0)
+# destPosition = (1170, 0)
