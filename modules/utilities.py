@@ -5,7 +5,7 @@ from modules.game_screen import GameScreen
 from config import robotSize, robotVelocity, chromosomeLength, initialRobotPosition
 import pygame
 
-def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mainDirection):
+def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
     """
     :description: Moves a list of robots randomly, to a main direction. It is the initialization
         of the first generation. List of robots is the population
@@ -20,39 +20,14 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject, mai
     gameScreen.fillScreen()
     dest.drawObject(gameScreen.screen)
     for robot in robots:
-        if len(robot.steps) == 0:
-            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
-        if len(robot.steps) > 0 and len(robot.steps) % 2 == 0:
-            # mainDirection = robot.steps[0]['direction']
-            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, mainDirection)
+        if len(robot.steps) % 2 == 0:
+            robot.move(gameScreen.screenWidth, gameScreen.screenHeight, robot.mainDirection)
         else:
             robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))
         robot.drawObject(gameScreen.screen)
 
     pygame.display.flip()
     pygame.time.delay(10)
-    
-
-# Ez nem tereli oket semerre
-# def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
-    # """
-    # :description: Moves a list of robots randomly, to a main direction. It is the initialization
-        # of the first generation. List of robots is the population
-    # :param gameScreen: GameScreen object where the robots should be moved
-    # :type gameScreen: GameScreen
-    # :param robots: list of Robot objects
-    # :type robots: list
-    # :param dest: The destination object. It is necessary for reparing the dest object
-
-    # """
-    # gameScreen.fillScreen()
-    # dest.drawObject(gameScreen.screen)
-    # for robot in robots:
-        # robot.move(gameScreen.screenWidth, gameScreen.screenHeight, randint(1,4))
-        # robot.drawObject(gameScreen.screen)
-
-    # pygame.display.flip()
-    # pygame.time.delay(100)
 
 def crossover(population: list, gameScreen: GameScreen):
 
@@ -110,7 +85,10 @@ def mutatePopulation(mergedPopulation: list, gameScreen: GameScreen, mutatationF
     while c != mutatationFactor + 1:
         gnome = mergedPopulation[-c]
         gnome.mutate()
+        # Reseting gnome position to move it again afer mutatation
+        gnome.resetRobotPosition()
         for step in gnome.steps:
+            # Moving the gnome to last position to calculate fitness
             gnome.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
         c += 1
 

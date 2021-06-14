@@ -46,6 +46,7 @@ class Robot(GameObject):
         self.steps = []
         self.fitness = None
         self.generation = 0
+        self.mainDirection = 0
 
     def _saveStep(self, step: int):
 
@@ -58,7 +59,7 @@ class Robot(GameObject):
         self.steps.append(step)
 
 
-    def _resetRobotPosition(self):
+    def resetRobotPosition(self):
 
         """
         :description: resets the robot x and y coordinates. It should be used after
@@ -130,6 +131,5 @@ class Robot(GameObject):
 
         """
         self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
-        self._resetRobotPosition()
 
 
