@@ -2,7 +2,7 @@
 from modules.game_object import GameObject, Robot
 from modules.game_screen import GameScreen
 from modules.utilities import pseudoRandomMove, checkQuitEvent
-from modules.utilities import crossover, mutatePopulation, selection
+from modules.ga_utilities import crossover, mutatePopulation, selection
 from random import randint
 from config import screenWidth, screenHeight, robotSize, robotVelocity, destSize
 from config import initialRobotPosition, destPosition
