@@ -83,7 +83,17 @@ def main():
         population = mergedPopulation
         del mergedPopulation
 
+
+        # Increasing generation number of population and individuals
+        generation += 1
+        for robot in population:
+            robot.generation += 1
+        print("Current generation: {}".format(generation))
+        print("Best fitness: {}".format(population[0].fitness))
+
+        # Reseting starting position to draw out population
         [robot.resetRobotPosition() for robot in population]
+
         # Drawing population
         for s in range(chromosomeLength):
             checkQuitEvent()
@@ -95,17 +105,10 @@ def main():
             pygame.display.flip()
             pygame.time.delay(10)
 
-        # Increasing generation number of population and individuals
-        generation += 1
-        for robot in population:
-            robot.generation += 1
-        print("Current generation: {}".format(generation))
-        print("Best fitness: {}".format(population[0].fitness))
-        bestFitness = population[0].fitness
-
-        # Checking if we reached the destination
-        if - bestFitness < robotSize[0]:
-            break
+            # Checking if any of the individuals reached the destination
+            for robot in population:
+                if robot.rect.colliderect(dest.rect):
+                    return 0
 
         c += 1
 

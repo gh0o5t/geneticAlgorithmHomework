@@ -15,6 +15,7 @@ class GameObject:
         self.width = dimension[0]
         self.height = dimension[1]
         self.color = color 
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def setColor(self, color: tuple):
         self.color = color
@@ -24,14 +25,17 @@ class GameObject:
         """
         :description: modifies the x and y values of a GameObject
         :param newPosition: new position of the GameObject
-        :type newPosition: tupl
+        :type newPosition: tuple
         """
         self.x = newPosition[0]
         self.y = newPosition[1]
 
     def drawObject(self, screen: GameScreen):
         # screen must be a a GameScreen screen attribute
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+        # pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+        self.rect.x = self.x
+        self.rect.y = self.y
+        pygame.draw.rect(screen, self.color, self.rect)
 
 class Robot(GameObject):
 
