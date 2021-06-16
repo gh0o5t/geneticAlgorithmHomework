@@ -1,8 +1,21 @@
 #!/usr/bin/env python3
-from config import robotSize, robotVelocity, chromosomeLength, initialRobotPosition
+from config import robotSize, robotVelocity, chromosomeLength, initialRobotPosition, populationSize
 from modules.game_screen import GameScreen
 from modules.game_object import Robot
 from random import  choice, sample
+
+def parentSelection(population: list):
+    """
+    :description: selection for parents
+    :param: population: the population of Robot objects
+    :type population: list 
+    :returns: _
+    :rtype: list
+    """
+    concurrentParents = sample(population, 6)
+    concurrentParents.sort(key=lambda x: x.fitness, reverse=True)
+    return concurrentParents[0]
+
 
 def crossover(population: list, gameScreen: GameScreen):
 
@@ -21,8 +34,7 @@ def crossover(population: list, gameScreen: GameScreen):
 
     for _ in range(len(population)):
         # Selecting parents randomly
-        parents = sample(population, 2)
-        robotA, robotB = parents[0], parents[1]
+        robotA, robotB = parentSelection(population), parentSelection(population)
         counter = 0
         # Init child
         child = Robot(initialRobotPosition, robotSize, robotVelocity)
@@ -36,51 +48,31 @@ def crossover(population: list, gameScreen: GameScreen):
         children.append(child)
     return children
 
-def mutatePopulation(mergedPopulation: list, gameScreen: GameScreen, mutatationFactor: int):
+def mutation(population: list, gameScreen: GameScreen, mutatationFactor: float): 
 
     """
-    :description: mutates some of the bad fitness individuals. The fitness values of the robots must be
-        calculated previously. This modifies the original population worst mutatationFactor amount of members.
+    :description: mutates some of the individuals.
+        The fitness values of the robots must be calculated previously.
+        This function modifies the  mutationFactor percent of the original population
         This function also sorts the population based on fitness value.
     :param population: a list of Robot objects, this list of objects will me modified 
         with this function
     :type population: list
     :param gameScreen: GameScreen object where the population moves, necessary to move the gnomes
         to the right position and calculate the fitness
-    :param mutatationFactor: number of indiviuals who will be mutatated
-    :type mutatationFactor: int
+    :param mutatationFactor: percentage of individuals who will be mutated
+    :type mutatationFactor: float
     """
 
-    mergedPopulation.sort(key=lambda x: x.fitness, reverse=True)
-    c = 1
-    # +1 is needed cuz without it it would mutate 
-    #     mutationFactor - 1 amount of individuals
-    while c != mutatationFactor + 1:
-        gnome = mergedPopulation[-c]
+    mutated = set()
+    for _ in range(int(populationSize * mutatationFactor)):
+        gnome = choice(population)
+        # Prevent double mutation on one indiviual
+        while gnome in mutated:
+            gnome = choice(population)
         gnome.mutate()
-        # Reseting gnome position to move it again afer mutatation
         gnome.resetRobotPosition()
         for step in gnome.steps:
             # Moving the gnome to last position to calculate fitness
             gnome.move(gameScreen.screenWidth, gameScreen.screenHeight, step, saveStep=False)
-        c += 1
-
-def selection(mergedPopulation: list):
-
-    """
-    :description: select best individuals from the population. Size of
-        the population will remain the same over the generations. This function should be
-        called on a merged (children and parents) and a mutated population.
-        Cuz the len of population must be same over the genrations it will remove the worse half
-        of the merged population. This function also sort the population based on fitness before
-        deletion.
-        This fuction modifies the original population. 
-    :param mergedPopulation: the merged population which must go through selection
-        list of robot objects (children, parents, gnomes)
-    :type mergedPopulation: list
-    """
-
-    mergedPopulation.sort(key=lambda x: x.fitness, reverse=True)
-    n = int(-len(mergedPopulation)/2) 
-    del mergedPopulation[n:]
 

@@ -5,7 +5,6 @@ from modules.game_screen import GameScreen
 import pygame
 
 
-
 def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
     """
     :description: Moves a list of robots randomly, to a main direction. It is the initialization

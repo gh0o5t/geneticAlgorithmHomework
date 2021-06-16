@@ -5,8 +5,9 @@ import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from config import initialRobotPosition
+from config import initialRobotPosition, chromosomeLength
 from math import sqrt
+from random import randint
 
 class GameObject:
     def __init__(self, position: tuple, dimension: tuple, color=(255, 0, 0)):
@@ -49,7 +50,6 @@ class Robot(GameObject):
         # Works as a chromosome of the individual
         self.steps = []
         self.fitness = None
-        self.generation = 0
         self.mainDirection = 0
 
     def _saveStep(self, step: int):
@@ -110,22 +110,21 @@ class Robot(GameObject):
         if saveStep:
             self._saveStep(direction)
 
-    def mutate(self):
+    def mutate(self, factor=0.5):
 
         """
         :description: mutates the individual/robot, inverts all the steps of the robot
+        :param factor: This percent of chromosome will be modified by mutation
+        :type factor: float
         """
-
-        for step in range(len(self.steps)):
-            if self.steps[step] == 1:
-                self.steps[step] = 2
-            if self.steps[step] == 2:
-                self.steps[step] = 1
-            if self.steps[step] == 3:
-                self.steps[step] = 4
-            if self.steps[step] == 4:
-                self.steps[step] = 3
-
+        modifiedIndex = []
+        for _ in range(int(chromosomeLength * factor)):
+            index = randint(0, chromosomeLength -1 )
+            while index in modifiedIndex:
+                index = randint(0, chromosomeLength - 1)
+            modifiedIndex.append(index)
+            self.steps[index] = randint(1,4)
+            
     def calFitness(self, dest: GameObject):
 
         """

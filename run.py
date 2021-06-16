@@ -2,13 +2,12 @@
 from modules.game_object import GameObject, Robot
 from modules.game_screen import GameScreen
 from modules.utilities import pseudoRandomMove, checkQuitEvent
-from modules.ga_utilities import crossover, mutatePopulation, selection
+from modules.ga_utilities import crossover, mutation
 from random import randint
 from config import screenWidth, screenHeight, robotSize, robotVelocity, destSize
 from config import initialRobotPosition, destPosition
 from config import populationSize, chromosomeLength, maxGeneration
 import pygame
-
 
 
 def initGame():
@@ -37,22 +36,22 @@ def main():
     # Initalizing first generation
     population = [Robot(initialRobotPosition, robotSize, robotVelocity) for _ in range(populationSize)]
 
-    # Best fitness of any individual in the current generation
-    bestFitness = None
-
     # Initalizing main direction of robots
     # Only the first generation has the main direction set
     for robot in population:
         robot.mainDirection = randint(1,4)
 
-        # Randomly moving first generation
+    # Randomly moving first generation
     for _ in range(chromosomeLength):
         checkQuitEvent()
         pseudoRandomMove(game, population, dest)
 
+    # Calculating the fitness of 0. generation
+    [robot.calFitness(dest) for robot in population]
+
     c = 0
     while c != maxGeneration:
-        # Delaying pygame between genration
+        # Delaying pygame between generations
         pygame.time.delay(10)
 
         # Reset screen for the current generation
@@ -64,32 +63,26 @@ def main():
         # Crossover of population
         children = crossover(population, game)
 
-        # Calculating fitness of children and parents of current generation
-        mergedPopulation = population + children
-        [robot.calFitness(dest) for robot in mergedPopulation]
+        # Calculating the fitness of children
+        [robot.calFitness(dest) for robot in children]
 
-        # Mutatation of last 10% of the population.
-        mutatePopulation(mergedPopulation, game, round(populationSize * 0.1))
+        # Mutation of newly created individuals
+        mutation(children, game, 0.05)
+        
+        # Recalculating fitness of new generation with gnomes
+        [robot.calFitness(dest) for robot in children]
 
-        # Recalculating the fitness after mutation
-        [robot.calFitness(dest) for robot in mergedPopulation]
+        # New generation
+        population = children
 
-        # Selection of population (sorts the population)
-        selection(mergedPopulation)
-
-        # Removing unused objects, creating new population
-        del children
-        del population
-        population = mergedPopulation
-        del mergedPopulation
-
-
-        # Increasing generation number of population and individuals
+        # Increasing generation number of population
         generation += 1
-        for robot in population:
-            robot.generation += 1
         print("Current generation: {}".format(generation))
-        print("Best fitness: {}".format(population[0].fitness))
+        
+        # Print best fitness of population
+        fitnessValues = set()
+        [fitnessValues.add(robot.fitness) for robot in population]
+        print("Best fitness: {}".format(max(fitnessValues)))
 
         # Reseting starting position to draw out population
         [robot.resetRobotPosition() for robot in population]
