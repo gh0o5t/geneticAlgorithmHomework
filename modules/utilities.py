@@ -6,17 +6,18 @@ import pygame
 
 
 def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
+
     """
     :description: Moves a list of robots randomly, to a main direction. It is the initialization
-        of the first generation. List of robots is the population
+        of the first generation.
     :param gameScreen: GameScreen object where the robots should be moved
     :type gameScreen: GameScreen
     :param robots: list of Robot objects
     :type robots: list
-    :param dest: The destination object. It is necessary for reparing the dest object
+    :param dest: The destination object. It is necessary for reparing the dest object on the game screen
     :type dest: GameObject
-
     """
+
     gameScreen.fillScreen()
     dest.drawObject(gameScreen.screen)
     for robot in robots:
@@ -31,9 +32,11 @@ def pseudoRandomMove(gameScreen: GameScreen, robots: list, dest: GameObject):
 
 
 def checkQuitEvent():
+
     """
     :description: checks for quit event in pygame and quits if necessary
     """
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()

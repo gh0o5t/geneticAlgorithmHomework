@@ -5,11 +5,16 @@ import os, sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from config import initialRobotPosition, chromosomeLength
+from config import initialRobotPosition, chromosomeLength, geneMutationFactor
 from math import sqrt
 from random import randint
 
 class GameObject:
+
+    """
+    :description: object on the game screen
+    """
+
     def __init__(self, position: tuple, dimension: tuple, color=(255, 0, 0)):
         self.x = position[0]
         self.y = position[1]
@@ -19,6 +24,13 @@ class GameObject:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def setColor(self, color: tuple):
+
+        """
+        :description: sets the color of GameObject
+        :param color: rgb color 
+        :type color: tuple
+        """
+         
         self.color = color
 
     def modifyPositon(self, newPosition):
@@ -28,6 +40,7 @@ class GameObject:
         :param newPosition: new position of the GameObject
         :type newPosition: tuple
         """
+
         self.x = newPosition[0]
         self.y = newPosition[1]
 
@@ -55,7 +68,7 @@ class Robot(GameObject):
     def _saveStep(self, step: int):
 
         """
-        :description: saves the steps into self.steps list, and the initial position of the robot
+        :description: saves the steps into self.steps list
         :param step: the step which should be saved, it is a direction
         :type step: int
         """
@@ -67,9 +80,10 @@ class Robot(GameObject):
 
         """
         :description: resets the robot x and y coordinates. It should be used after
-            calculating a the fitness of the robot. It is necessary for having the same
+            calculating the fitness of the robot. It is necessary for having the same
             starting position for all the robots in all of the generations.
         """
+
         self.x = initialRobotPosition[0]
         self.y = initialRobotPosition[1]
 
@@ -77,9 +91,13 @@ class Robot(GameObject):
     def move(self, wBorder: int, hBorder: int, direction: int, saveStep = True):
 
         """
-        :description: Moes Robot object on the screen
+        :description: Moves Robot object on the screen, calls self.saveStep if necessary.
         :param direction: 1: left, 2, right, 3: up, 4: down
         :type direction: int
+        :param wBorder: width of screen where robot moves
+        :type wBorder: int
+        :param hBorder: height of screen where robot moves
+        :type hBorder: int
         :param saveStep: if True saves the step of the robot to steps attribute, otherwise not.
             Basically if step list is emtpy it should be true, fale otherwise.
         :type saveStep: bool
@@ -110,13 +128,14 @@ class Robot(GameObject):
         if saveStep:
             self._saveStep(direction)
 
-    def mutate(self, factor=0.5):
+    def mutate(self, factor=geneMutationFactor):
 
         """
-        :description: mutates the individual/robot, inverts all the steps of the robot
-        :param factor: This percent of chromosome will be modified by mutation
+        :description: mutates the robot, randomly changes the genes. 
+        :param factor: This percent of genes will be modified int the chromosome by mutation.
         :type factor: float
         """
+
         modifiedIndex = []
         for _ in range(int(chromosomeLength * factor)):
             index = randint(0, chromosomeLength -1 )
@@ -128,11 +147,11 @@ class Robot(GameObject):
     def calFitness(self, dest: GameObject):
 
         """
-        :description: calculates the fitness value of a Robot/Individual
+        :description: calculates the fitness value of a robot
         :param dest: the destination which must be reached
         :type dest: GameObject 
-
         """
+
         self.fitness = - sqrt(pow((dest.y - self.y), 2) + pow((dest.x - self.x), 2))
 
 

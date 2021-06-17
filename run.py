@@ -6,7 +6,8 @@ from modules.ga_utilities import crossover, mutation
 from random import randint
 from config import screenWidth, screenHeight, robotSize, robotVelocity, destSize
 from config import initialRobotPosition, destPosition
-from config import populationSize, chromosomeLength, maxGeneration
+from config import populationSize, chromosomeLength, maxGeneration 
+from config import populationMutationFactor
 import pygame
 
 
@@ -33,7 +34,7 @@ def main():
     # Initalizing generation number
     generation = 0
 
-    # Initalizing first generation
+    # Initalizing 0. generation
     population = [Robot(initialRobotPosition, robotSize, robotVelocity) for _ in range(populationSize)]
 
     # Initalizing main direction of robots
@@ -67,7 +68,7 @@ def main():
         [robot.calFitness(dest) for robot in children]
 
         # Mutation of newly created individuals
-        mutation(children, game, 0.05)
+        mutation(children, game, populationMutationFactor)
         
         # Recalculating fitness of new generation with gnomes
         [robot.calFitness(dest) for robot in children]
@@ -101,9 +102,12 @@ def main():
             # Checking if any of the individuals reached the destination
             for robot in population:
                 if robot.rect.colliderect(dest.rect):
-                    return 0
+                    return [max(fitnessValues), generation]
 
         c += 1
 
 if __name__ == "__main__":
-    main()
+    results = main()
+    # Write best fintess and generation number to log 
+    with open("genetic.log", "a") as logfile:
+        logfile.write("Best fitness: {}, Generations: {}\n".format(results[0], results[1]))

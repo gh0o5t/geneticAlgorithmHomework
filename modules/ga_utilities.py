@@ -7,7 +7,7 @@ from random import  choice, sample
 def parentSelection(population: list):
     """
     :description: selection for parents
-    :param: population: the population of Robot objects
+    :param population: the population of Robot objects
     :type population: list 
     :returns: _
     :rtype: list
@@ -53,7 +53,7 @@ def mutation(population: list, gameScreen: GameScreen, mutatationFactor: float):
     """
     :description: mutates some of the individuals.
         The fitness values of the robots must be calculated previously.
-        This function modifies the  mutationFactor percent of the original population
+        This function modifies mutationFactor percent of the original population
         This function also sorts the population based on fitness value.
     :param population: a list of Robot objects, this list of objects will me modified 
         with this function

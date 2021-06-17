@@ -4,8 +4,7 @@ from random import randint
 # Help function to randomly initalize game object postions
 def genRandomPosition(screenSize: tuple, objSize: tuple):
     """
-    Creates random postion on the GameScreen
-
+    :description: Creates random postion on the GameScreen
     :param screenSize: size of screen 
     :type screenSize: tuple
     :param objSize: size of the object that should be placed
